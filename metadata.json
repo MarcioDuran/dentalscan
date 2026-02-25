@@ -1,0 +1,5 @@
+{
+  "name": "DentoScan AI",
+  "description": "Aplicativo de diagnóstico odontológico por imagem com IA. Analisa danos nos dentes, gera prognósticos, tratamentos e orçamentos em PDF.",
+  "requestFramePermissions": ["camera"]
+}
