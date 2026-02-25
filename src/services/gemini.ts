@@ -1,8 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Suporta tanto o ambiente do Netlify (VITE_GEMINI_API_KEY) quanto o ambiente atual (process.env.GEMINI_API_KEY)
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey: apiKey as string });
+// Função para pegar a chave da API de forma segura sem quebrar o app no navegador (Netlify)
+const getApiKey = () => {
+  // 1. Tenta pegar a variável do Vite (Netlify)
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) {
+    return import.meta.env.VITE_GEMINI_API_KEY;
+  }
+  // 2. Tenta pegar a variável do ambiente Node (AI Studio)
+  if (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) {
+    return process.env.GEMINI_API_KEY;
+  }
+  return "";
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 export interface DentalDiagnosis {
   diagnosis: string;
