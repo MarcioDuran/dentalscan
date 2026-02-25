@@ -13,8 +13,6 @@ const getApiKey = () => {
   return "";
 };
 
-const ai = new GoogleGenAI({ apiKey: getApiKey() });
-
 export interface DentalDiagnosis {
   diagnosis: string;
   damagedTeeth: string[];
@@ -31,6 +29,13 @@ export async function analyzeDentalImage(
   base64Image: string,
   mimeType: string,
 ): Promise<DentalDiagnosis> {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error("Chave da API do Gemini não configurada. Verifique as variáveis de ambiente.");
+  }
+  
+  const ai = new GoogleGenAI({ apiKey });
+
   const prompt = `
     Você é um dentista especialista em diagnóstico por imagem. Analise a imagem fornecida dos dentes de um paciente.
     Identifique quaisquer sinais visíveis de danos causados pela mastigação, erosão dentária, cáries, fraturas ou outros problemas.
