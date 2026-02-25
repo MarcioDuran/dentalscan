@@ -1,6 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Suporta tanto o ambiente do Netlify (VITE_GEMINI_API_KEY) quanto o ambiente atual (process.env.GEMINI_API_KEY)
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+const ai = new GoogleGenAI({ apiKey: apiKey as string });
 
 export interface DentalDiagnosis {
   diagnosis: string;
