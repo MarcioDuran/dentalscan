@@ -132,7 +132,13 @@ ${diagnosis.prognosis}
 
     const encodedText = encodeURIComponent(text);
     // Assuming we send to the patient's phone
-    const phone = patient.phone.replace(/\D/g, "");
+    let phone = patient.phone.replace(/\D/g, "");
+    
+    // Adiciona o código do Brasil (55) se o número tiver 10 ou 11 dígitos (DDD + Número)
+    if ((phone.length === 10 || phone.length === 11) && !phone.startsWith("55")) {
+      phone = "55" + phone;
+    }
+    
     window.open(`https://wa.me/${phone}?text=${encodedText}`, "_blank");
   };
 
