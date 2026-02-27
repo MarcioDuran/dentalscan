@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Mail, Lock, ArrowRight } from "lucide-react";
-import { cn } from "../lib/utils";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../lib/firebase";
 
 interface LoginProps {
   onLogin: (email: string) => void;
@@ -9,10 +10,28 @@ interface LoginProps {
 export function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) onLogin(email);
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading(true);
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result.user && result.user.email) {
+        onLogin(result.user.email);
+      }
+    } catch (error: any) {
+      console.error("Erro ao fazer login com Google:", error);
+      if (error.code !== "auth/popup-closed-by-user") {
+        alert("Falha ao fazer login com o Google. Tente novamente.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,8 +64,10 @@ export function Login({ onLogin }: LoginProps) {
 
         <div className="mt-8 space-y-6">
           <button
-            onClick={() => onLogin("dr.silva@gmail.com")}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -67,7 +88,7 @@ export function Login({ onLogin }: LoginProps) {
               />
               <path d="M1 1h22v22H1z" fill="none" />
             </svg>
-            Continuar com Google
+            {isLoading ? "Conectando..." : "Continuar com Google"}
           </button>
 
           <div className="relative">

@@ -34,8 +34,13 @@ export function History({ onBack, onSelect, onLogout }: HistoryProps) {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useEffect(() => {
-    setConsultations(getConsultations());
+    loadConsultations();
   }, []);
+
+  const loadConsultations = async () => {
+    const data = await getConsultations();
+    setConsultations(data);
+  };
 
   const handleDeleteClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
@@ -43,10 +48,10 @@ export function History({ onBack, onSelect, onLogout }: HistoryProps) {
     setConsultationToDelete(id);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (consultationToDelete) {
-      deleteConsultation(consultationToDelete);
-      setConsultations(getConsultations());
+      await deleteConsultation(consultationToDelete);
+      await loadConsultations();
       setConsultationToDelete(null);
     }
   };
@@ -58,12 +63,12 @@ export function History({ onBack, onSelect, onLogout }: HistoryProps) {
     setEditForm(consultation.patient);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingConsultation && editForm) {
       const updated = { ...editingConsultation, patient: editForm };
-      updateConsultation(updated.id, updated);
-      setConsultations(getConsultations());
+      await updateConsultation(updated.id, updated);
+      await loadConsultations();
       setEditingConsultation(null);
       setEditForm(null);
     }
@@ -73,8 +78,8 @@ export function History({ onBack, onSelect, onLogout }: HistoryProps) {
     setShowClearConfirm(true);
   };
 
-  const confirmClear = () => {
-    clearConsultations();
+  const confirmClear = async () => {
+    await clearConsultations();
     setConsultations([]);
     setShowClearConfirm(false);
   };

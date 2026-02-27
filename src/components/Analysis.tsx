@@ -49,7 +49,7 @@ export function Analysis({
         const result = await analyzeDentalImage(image, mimeType);
         if (isMounted) {
           setDiagnosis(result);
-          saveConsultation({
+          await saveConsultation({
             id: analysisId.current,
             date: new Date().toISOString(),
             patient,
